@@ -5,12 +5,15 @@
       <p>Произошла ошибка</p>
       <button @click="loadProducts">Попробуй еще раз</button>
     </div>
-    <div v-else>
-      Hi
-      <ul>
-        <li v-for="product in products" :key="product.id">{{ product }}</li>
-      </ul>
-    </div>
+    <ul v-else class="cards">
+      <li class="card p-3" v-for="product in products" :key="product.id">
+        <p class="card-title">{{ product.dish }}</p>
+        <p class="card-text">{{ product.description }}</p>
+        <button class="btn btn-primary mt-auto card-button">
+          Добавить в корзину
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -48,6 +51,24 @@ export default {
   padding: 24px;
   border-radius: 20px;
   box-sizing: border-box;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+  gap: 1rem;
+}
+
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-button {
+  max-width: 200px;
 }
 
 * {
