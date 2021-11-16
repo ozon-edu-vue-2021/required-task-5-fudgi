@@ -1,6 +1,6 @@
 <template>
   <div class="products">
-    <ul class="cards">
+    <ul v-if="products.length" class="cards">
       <li class="card p-3" v-for="product in products" :key="product.id">
         <img class="card-img-top" :src="product.preview" />
         <p class="card-text price">{{ product.price }} &#x20BD;</p>
@@ -14,6 +14,7 @@
         </div>
       </li>
     </ul>
+    <p v-else>Добавьте что-нибудь в корзину</p>
   </div>
 </template>
 
@@ -23,7 +24,7 @@ export default {
   components: {},
   computed: {
     products() {
-      return this.$store.state.products;
+      return this.$store.getters.cartProducts;
     },
   },
   methods: {
@@ -40,49 +41,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  list-style: none;
-  gap: 1rem;
-}
-
-.price {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  background-color: azure;
-  padding: 0 6px;
-  border-radius: 5px;
-  margin: 0;
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-button {
-  max-width: 200px;
-}
-.card-button::after {
-  content: "Добавить в корзину";
-}
-.card-button.btn-secondary::after {
-  content: "Удалить из корзины";
-}
-
-@media (min-width: 1280px) {
-  .cards {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-</style>
+<style scoped></style>

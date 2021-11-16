@@ -5,13 +5,20 @@ import previews from "@/assets/previews";
 
 Vue.use(Vuex);
 
-const ProductsModule = {
+export default new Vuex.Store({
   state: {
     products: [],
     isLoading: true,
     isError: true,
   },
-  getters: {},
+  getters: {
+    cartLength(state) {
+      return state.products.filter((item) => item.count).length;
+    },
+    cartProducts(state) {
+      return state.products.filter((item) => item.count);
+    },
+  },
   mutations: {
     setProducts(state, items) {
       state.products = items;
@@ -21,6 +28,12 @@ const ProductsModule = {
     },
     setLoading(state, status) {
       state.isLoading = status;
+    },
+    handleCart(state, item) {
+      const index = state.products.findIndex(({ id }) => id === item.id);
+      const product = state.products[index];
+      const newProduct = { ...product, count: product.count ? 0 : 1 };
+      Vue.set(state.products, index, newProduct);
     },
   },
   actions: {
@@ -33,13 +46,14 @@ const ProductsModule = {
           "https://random-data-api.com/api/food/random_food?size=30"
         );
         const products = response.data.map((item) => {
-          const previewIndex = Math.round(
-            Math.random() * (previews.length - 1)
-          );
+          const lastIndex = previews.length - 1;
+          const previewIndex = Math.round(Math.random() * lastIndex);
           return {
             ...item,
             price: Math.round(Math.random() * 1000),
             preview: previews[previewIndex],
+            selectedCount: 0,
+            isFavorite: false,
           };
         });
         context.commit("setProducts", products);
@@ -49,26 +63,5 @@ const ProductsModule = {
       }
       context.commit("setLoading", false);
     },
-  },
-};
-
-const CartModule = {
-  state: {
-    cartList: [],
-  },
-  getters: {},
-  mutations: {
-    handleCart(state, item) {
-      const index = state.cartList.findIndex(({ id }) => id === item.id);
-      if (index !== -1) state.cartList.splice(index, 1);
-      else state.cartList.push(item);
-    },
-  },
-};
-
-export default new Vuex.Store({
-  modules: {
-    products: ProductsModule,
-    cart: CartModule,
   },
 });

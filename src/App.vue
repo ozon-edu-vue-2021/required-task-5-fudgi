@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="app">
-      <nav>
+      <nav class="mb-3">
         <router-link to="/" class="router-link fs-2">Товары</router-link>
         <router-link to="/cart" class="router-link fs-2 mx-3">
           Корзина
@@ -32,16 +32,16 @@ export default {
   components: {},
   computed: {
     products() {
-      return this.$store.state.products.products;
+      return this.$store.state.products;
     },
     cartLength() {
-      return this.$store.state.cart.cartList.length;
+      return this.$store.getters.cartLength;
     },
     isError() {
-      return this.$store.state.products.isError;
+      return this.$store.state.isError;
     },
     isLoading() {
-      return this.$store.state.products.isLoading;
+      return this.$store.state.isLoading;
     },
   },
   methods: {
