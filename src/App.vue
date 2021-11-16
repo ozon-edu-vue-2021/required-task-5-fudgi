@@ -1,31 +1,27 @@
 <template>
   <div class="wrapper">
     <div class="app">
+      <nav>
+        <router-link to="/" class="router-link fs-2">Товары</router-link>
+        <router-link to="/cart" class="router-link fs-2 mx-3">
+          Корзина
+          <span class="cart-number" v-if="cartLength">
+            {{ cartLength }}
+          </span>
+        </router-link>
+      </nav>
+
       <div v-if="isLoading">Загрузка...</div>
 
       <div v-else-if="isError || !products.length">
         <p>Произошла ошибка</p>
         <button @click="loadProducts">Попробуй еще раз</button>
       </div>
-
-      <div v-else class="products">
-        <div>{{ cartList }}</div>
-        <h1>Товары</h1>
-        <ul class="cards">
-          <li class="card p-3" v-for="product in products" :key="product.id">
-            <img class="card-img-top" :src="product.preview" />
-            <p class="card-text price">{{ product.price }} &#x20BD;</p>
-            <div class="card-body">
-              <p class="card-title">{{ product.dish }}</p>
-              <p class="card-text">{{ product.description }}</p>
-              <button
-                class="btn btn-primary mt-auto card-button"
-                @click="handleCart(product, $event)"
-              />
-            </div>
-          </li>
-        </ul>
-      </div>
+      <transition v-else>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
+      </transition>
     </div>
   </div>
 </template>
@@ -38,8 +34,8 @@ export default {
     products() {
       return this.$store.state.products.products;
     },
-    cartList() {
-      return this.$store.state.cart.cartList;
+    cartLength() {
+      return this.$store.state.cart.cartList.length;
     },
     isError() {
       return this.$store.state.products.isError;
@@ -51,10 +47,6 @@ export default {
   methods: {
     loadProducts() {
       this.$store.dispatch("loadProducts");
-    },
-    handleCart(product, e) {
-      this.$store.commit("handleCart", product);
-      e.currentTarget.classList.toggle("btn-secondary");
     },
   },
   mounted() {
@@ -72,6 +64,30 @@ ul {
   padding: 0;
 }
 
+.router-link {
+  position: relative;
+  opacity: 0.6;
+  color: inherit;
+  text-decoration: none;
+}
+
+.router-link-exact-active {
+  opacity: 1;
+  color: blue;
+}
+
+.cart-number {
+  position: absolute;
+  top: 0;
+  color: white;
+  right: -20px;
+  font-size: 12px;
+  background-color: red;
+  width: 20px;
+  text-align: center;
+  border-radius: 50%;
+}
+
 .wrapper {
   display: flex;
   justify-content: center;
@@ -80,6 +96,9 @@ ul {
 }
 
 .app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   max-width: 1400px;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #2c3e50;
