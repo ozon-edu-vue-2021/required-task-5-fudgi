@@ -12,11 +12,18 @@ export default new Vuex.Store({
     isError: true,
   },
   getters: {
-    cartLength(state) {
-      return state.products.filter((item) => item.count).length;
-    },
     cartProducts(state) {
       return state.products.filter((item) => item.count);
+    },
+    cartLength(_, getters) {
+      return getters.cartProducts.length;
+    },
+    cartSum(_, getters) {
+      const sum = getters.cartProducts.reduce((acc, item) => {
+        return acc + item.count * item.price;
+      }, 0);
+      console.log(sum);
+      return sum;
     },
   },
   mutations: {
@@ -52,7 +59,7 @@ export default new Vuex.Store({
             ...item,
             price: Math.round(Math.random() * 1000),
             preview: previews[previewIndex],
-            selectedCount: 0,
+            count: 0,
             isFavorite: false,
           };
         });

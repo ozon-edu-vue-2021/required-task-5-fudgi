@@ -73,7 +73,7 @@ ul {
 
 .router-link-exact-active {
   opacity: 1;
-  color: blue;
+  color: #0d6efd;
 }
 
 .cart-number {
