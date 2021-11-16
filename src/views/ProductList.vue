@@ -1,26 +1,46 @@
 <template>
-  <div class="products">
-    <ul class="cards">
-      <li class="card p-3" v-for="product in products" :key="product.id">
-        <img class="card-img-top" :src="product.preview" />
-        <p class="card-text price">{{ product.price }} &#x20BD;</p>
-        <div class="card-body">
-          <p class="card-title">{{ product.dish }}</p>
-          <p class="card-text">{{ product.description }}</p>
+  <ul class="cards">
+    <li class="card p-3" v-for="product in products" :key="product.id">
+      <img class="card-img-top" :src="product.preview" />
+      <p class="card-text price">{{ product.price }} &#x20BD;</p>
+      <div class="card-favorite" @click="handleFavorite(product)">
+        <FavoriteIcon :isActive="product.isFavorite" />
+      </div>
+      <div class="card-body">
+        <p class="card-title">{{ product.dish }}</p>
+        <p class="card-text">{{ product.description }}</p>
+
+        <div class="mt-auto">
+          <input
+            v-if="product.count"
+            class="mb-3"
+            type="number"
+            min="0"
+            :value="product.count"
+            @change="changeCount(product.id, $event)"
+          />
           <button
             :class="buttonClasses(product.count)"
             @click="handleCart(product)"
-          />
+          >
+            {{ buttonText(product.count) }}
+          </button>
         </div>
-      </li>
-    </ul>
-  </div>
+      </div>
+    </li>
+  </ul>
 </template>
 
 <script>
+import FavoriteIcon from "@/components/FavoriteIcon";
+const CLEAR_COUNT = 0;
+const SET_COUNT = 1;
+
 export default {
-  name: "App",
-  components: {},
+  name: "ProductList",
+  components: {
+    FavoriteIcon,
+  },
   computed: {
     products() {
       return this.$store.state.products;
@@ -28,24 +48,33 @@ export default {
   },
   methods: {
     handleCart(product) {
-      this.$store.commit("handleCart", product);
+      this.$store.commit("handleCart", {
+        ...product,
+        count: product.count ? CLEAR_COUNT : SET_COUNT,
+      });
     },
     buttonClasses(count) {
-      return [
-        "btn btn-primary mt-auto card-button",
-        { "btn-secondary": count },
-      ];
+      return ["btn btn-primary card-button", { "btn-secondary": count }];
+    },
+    buttonText(count) {
+      return count ? "Удалить из корзины" : "Добавить в корзину";
+    },
+    changeCount(id, e) {
+      this.$store.commit("handleCart", { count: Number(e.target.value), id });
+    },
+    handleFavorite(product) {
+      this.$store.commit("handleFavorite", product);
     },
   },
 };
 </script>
 
 <style scoped>
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  list-style: none;
-  gap: 1rem;
+.card-favorite {
+  cursor: pointer;
+  position: absolute;
+  top: 30px;
+  left: 30px;
 }
 
 .price {
@@ -72,17 +101,5 @@ export default {
 
 .card-button {
   max-width: 200px;
-}
-.card-button::after {
-  content: "Добавить в корзину";
-}
-.card-button.btn-secondary::after {
-  content: "Удалить из корзины";
-}
-
-@media (min-width: 1280px) {
-  .cards {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 </style>

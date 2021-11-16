@@ -1,26 +1,40 @@
 <template>
   <div class="cart">
-    <ul v-if="products.length" class="list-group">
+    <ul v-if="cartProducts.length" class="list-group">
       <li
+        v-for="product in cartProducts"
         class="list-group-item cart-item p-3"
-        v-for="product in products"
         :key="product.id"
       >
         <img class="cart-item-picture" :src="product.preview" />
 
         <div class="cart-item-info">
           <p>{{ product.dish }}</p>
-          <p>{{ product.description }}</p>
+          <p class="card-description">{{ product.description }}</p>
           <p class="centered">{{ product.price }} &#x20BD;</p>
-          <button
-            class="btn card-button btn-secondary"
-            @click="handleCart(product)"
-          />
+          <div>
+            <input
+              v-if="product.count"
+              class="mb-3"
+              type="number"
+              min="0"
+              :value="product.count"
+              @change="changeCount(product.id, $event)"
+            />
+            <button
+              class="btn card-button btn-secondary"
+              @click="handleCart(product)"
+            >
+              Удалить из корзины
+            </button>
+          </div>
         </div>
       </li>
     </ul>
+
     <p v-else>Добавьте что-нибудь в корзину</p>
-    <div v-if="products.length" class="order p-3">
+
+    <div v-if="cartProducts.length" class="order p-3">
       <p>
         Сумма заказа: <span class="total-sum">{{ cartSum }} &#x20BD;</span>
       </p>
@@ -31,10 +45,9 @@
 
 <script>
 export default {
-  name: "App",
-  components: {},
+  name: "CartList",
   computed: {
-    products() {
+    cartProducts() {
       return this.$store.getters.cartProducts;
     },
     cartSum() {
@@ -43,10 +56,16 @@ export default {
   },
   methods: {
     handleCart(product) {
-      this.$store.commit("handleCart", product);
+      this.$store.commit("handleCart", {
+        ...product,
+        count: product.count ? 0 : 1,
+      });
     },
     handleOrder() {
-      alert(this.products.map((product) => product.dish));
+      alert(this.cartProducts.map((product) => product.dish));
+    },
+    changeCount(id, e) {
+      this.$store.commit("handleCart", { count: Number(e.target.value), id });
     },
   },
 };
@@ -57,14 +76,23 @@ export default {
   display: flex;
   gap: 20px;
 }
+
 .cart-item {
   display: grid;
   align-items: center;
   grid-template-columns: 200px 1fr;
   gap: 20px;
 }
+
 .cart-item-picture {
   max-width: 200px;
+}
+
+.card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .cart-item-info {
@@ -73,6 +101,7 @@ export default {
   align-items: center;
   gap: 20px;
 }
+
 .centered {
   text-align: center;
 }

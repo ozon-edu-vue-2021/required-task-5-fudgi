@@ -22,8 +22,13 @@ export default new Vuex.Store({
       const sum = getters.cartProducts.reduce((acc, item) => {
         return acc + item.count * item.price;
       }, 0);
-      console.log(sum);
       return sum;
+    },
+    favorites(state) {
+      return state.products.filter((item) => item.isFavorite);
+    },
+    favoritesLength(_, getters) {
+      return getters.favorites.length;
     },
   },
   mutations: {
@@ -39,7 +44,13 @@ export default new Vuex.Store({
     handleCart(state, item) {
       const index = state.products.findIndex(({ id }) => id === item.id);
       const product = state.products[index];
-      const newProduct = { ...product, count: product.count ? 0 : 1 };
+      const newProduct = { ...product, count: item.count };
+      Vue.set(state.products, index, newProduct);
+    },
+    handleFavorite(state, item) {
+      const index = state.products.findIndex(({ id }) => id === item.id);
+      const product = state.products[index];
+      const newProduct = { ...product, isFavorite: !product.isFavorite };
       Vue.set(state.products, index, newProduct);
     },
   },
