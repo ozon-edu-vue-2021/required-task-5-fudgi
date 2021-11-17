@@ -2,6 +2,17 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import previews from "@/assets/previews";
+import {
+  SET_PRODUCTS,
+  SET_ERROR,
+  SET_LOADING,
+  HANDLE_CART,
+  CHANGE_CART_COUNT,
+  HANDLE_FAVORITE,
+} from "./mutation-types";
+
+const CLEAR_COUNT = 0;
+const SET_COUNT = 1;
 
 Vue.use(Vuex);
 
@@ -32,22 +43,29 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    setProducts(state, items) {
+    [SET_PRODUCTS](state, items) {
       state.products = items;
     },
-    setError(state, status) {
+    [SET_ERROR](state, status) {
       state.isError = status;
     },
-    setLoading(state, status) {
+    [SET_LOADING](state, status) {
       state.isLoading = status;
     },
-    handleCart(state, item) {
+    [HANDLE_CART](_, product) {
+      const newProduct = {
+        ...product,
+        count: product.count ? CLEAR_COUNT : SET_COUNT,
+      };
+      this.commit(CHANGE_CART_COUNT, newProduct);
+    },
+    [CHANGE_CART_COUNT](state, item) {
       const index = state.products.findIndex(({ id }) => id === item.id);
       const product = state.products[index];
       const newProduct = { ...product, count: item.count };
       Vue.set(state.products, index, newProduct);
     },
-    handleFavorite(state, item) {
+    [HANDLE_FAVORITE](state, item) {
       const index = state.products.findIndex(({ id }) => id === item.id);
       const product = state.products[index];
       const newProduct = { ...product, isFavorite: !product.isFavorite };
@@ -56,8 +74,8 @@ export default new Vuex.Store({
   },
   actions: {
     async loadProducts(context) {
-      context.commit("setLoading", true);
-      context.commit("setError", false);
+      context.commit(SET_LOADING, true);
+      context.commit(SET_ERROR, false);
 
       try {
         const response = await axios.get(
@@ -74,12 +92,12 @@ export default new Vuex.Store({
             isFavorite: false,
           };
         });
-        context.commit("setProducts", products);
-        context.commit("setError", false);
+        context.commit(SET_PRODUCTS, products);
+        context.commit(SET_ERROR, false);
       } catch {
-        context.commit("setError", true);
+        context.commit(SET_ERROR, true);
       }
-      context.commit("setLoading", false);
+      context.commit(SET_LOADING, false);
     },
   },
 });
