@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper">
+    <notifications />
     <div class="app">
       <Navbar />
 

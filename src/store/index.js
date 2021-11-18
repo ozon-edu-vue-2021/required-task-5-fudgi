@@ -13,8 +13,19 @@ import {
 
 const CLEAR_COUNT = 0;
 const SET_COUNT = 1;
+const ERROR = {
+  type: "error",
+  title: "Ошибка",
+  text: "Что-то пошло не так",
+};
 
 Vue.use(Vuex);
+
+const findItemById = (arr, id) => {
+  const index = arr.findIndex((arrItem) => arrItem.id === id);
+  const product = arr[index];
+  return { index, product };
+};
 
 export default new Vuex.Store({
   state: {
@@ -60,14 +71,14 @@ export default new Vuex.Store({
       this.commit(CHANGE_CART_COUNT, newProduct);
     },
     [CHANGE_CART_COUNT](state, item) {
-      const index = state.products.findIndex(({ id }) => id === item.id);
-      const product = state.products[index];
+      const { index, product } = findItemById(state.products, item.id);
+      if (!product) return Vue.prototype.$notify(ERROR);
       const newProduct = { ...product, count: item.count };
       Vue.set(state.products, index, newProduct);
     },
     [HANDLE_FAVORITE](state, item) {
-      const index = state.products.findIndex(({ id }) => id === item.id);
-      const product = state.products[index];
+      const { index, product } = findItemById(state.products, item.id);
+      if (!product) return Vue.prototype.$notify(ERROR);
       const newProduct = { ...product, isFavorite: !product.isFavorite };
       Vue.set(state.products, index, newProduct);
     },
