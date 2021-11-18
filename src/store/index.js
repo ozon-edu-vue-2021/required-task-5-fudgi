@@ -76,8 +76,8 @@ export default new Vuex.Store({
       const newProduct = { ...product, count: item.count };
       Vue.set(state.products, index, newProduct);
     },
-    [HANDLE_FAVORITE](state, item) {
-      const { index, product } = findItemById(state.products, item.id);
+    [HANDLE_FAVORITE](state, id) {
+      const { index, product } = findItemById(state.products, id);
       if (!product) return Vue.prototype.$notify(ERROR);
       const newProduct = { ...product, isFavorite: !product.isFavorite };
       Vue.set(state.products, index, newProduct);

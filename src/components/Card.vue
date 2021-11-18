@@ -1,7 +1,7 @@
 <template>
   <li class="card p-3">
     <img class="card-img-top" :src="product.preview" />
-    <div class="card-favorite" @click="handleFavorite(product)">
+    <div class="card-favorite" @click="handleFavorite(product.id)">
       <FavoriteIcon :isActive="product.isFavorite" />
     </div>
     <div class="card-body">
@@ -41,8 +41,8 @@ export default {
     FavoriteIcon,
   },
   methods: {
-    handleFavorite(product) {
-      this.$store.commit(HANDLE_FAVORITE, product);
+    handleFavorite(id) {
+      this.$store.commit(HANDLE_FAVORITE, id);
     },
     buttonClasses(count) {
       return ["btn btn-primary card-button", { "btn-secondary": count }];
