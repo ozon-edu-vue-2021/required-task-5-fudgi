@@ -1,0 +1,6 @@
+export const SET_PRODUCTS = "SET_PRODUCTS";
+export const SET_ERROR = "SET_ERROR";
+export const SET_LOADING = "SET_LOADING";
+export const HANDLE_CART = "HANDLE_CART";
+export const CHANGE_CART_COUNT = "CHANGE_CART_COUNT";
+export const HANDLE_FAVORITE = "HANDLE_FAVORITE";
